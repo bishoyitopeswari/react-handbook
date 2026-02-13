@@ -28,6 +28,7 @@ When state changes, React creates a new Virtual DOM tree, compares it with the p
 Those changes are then applied to the Real DOM during the commit phase. This makes updates efficient and predictable.
 
 ✅ Correct Mental Model
+
 🔹 Real DOM
 1. The actual browser DOM
 2. Tree of real nodes (div, p, button)
@@ -56,3 +57,27 @@ Answer:
 - Because Fiber breaks rendering into small tasks, the render phase can pause, resume, or prioritize updates in React 18, but the commit phase always runs fully without interruption.
 - In short, steps of Fiber reconciliation — scheduling the update, building the work-in-progress tree during the render phase,
   comparing it with the current tree, marking effects, committing DOM changes, and finally swapping the trees.
+
+Bonus Points
+🎯 What Makes It Specifically “Fiber”?
+
+Two key things:
+
+🔹 Work-In-Progress Tree
+
+React keeps two trees:
+
+- Current tree (what’s on screen)
+- WIP tree (what’s being prepared)
+
+This double-buffering is a Fiber concept.
+
+🔹 Interruptible Render Phase
+
+Fiber allows:
+
+- Pausing
+- Resuming
+- Prioritizing updates
+
+Old React (Stack Reconciler) could not do this.

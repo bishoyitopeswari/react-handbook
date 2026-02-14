@@ -81,3 +81,44 @@ Fiber allows:
 - Prioritizing updates
 
 Old React (Stack Reconciler) could not do this.
+
+Question 4: How React schedules priority updates (Lanes)?
+
+Answer:
+In React 18, lanes are a priority-based scheduling system. When a state update occurs, React assigns it a lane that represents its priority. Internally, React uses bitmasks to represent these lanes, which allows multiple priorities to be tracked efficiently at the same time. React processes higher-priority lanes first and can pause lower-priority rendering if a more urgent update arrives. This enables concurrent rendering and improves UI responsiveness.
+
+Bonus:
+1. A bitmask is just a number written in binary (0s and 1s).
+2. Each bit represents one priority lane.
+
+Question 5:  • Rules of Hooks and how they are mapped internally?
+
+Answer:
+1) Only call Hooks at the top level
+   
+❌ Don’t call inside:
+- if conditions
+- loops
+- nested functions
+- try/catch
+
+Because React tracks Hooks by their call order.
+If a Hook runs sometimes and skips other times, the order changes between renders, 
+so React assigns the wrong state to the wrong Hook → bugs/crashes.
+
+React relies on the order of Hook calls to associate each Hook with its state. 
+React doesn't know which Hook is which by name because it tracks them by call order.
+
+✅ Always call hooks at the top of your component / custom hook.
+
+2) Only call Hooks from React functions
+
+✅ Allowed:
+
+- React function components
+- custom hooks (functions starting with use)
+
+❌ Not allowed:
+
+- normal JS functions
+- class components

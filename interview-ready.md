@@ -122,3 +122,74 @@ React doesn't know which Hook is which by name because it tracks them by call or
 
 - normal JS functions
 - class components
+
+Question 5:  What happens if you call a setState inside useEffect with no dependency array?
+
+Answer: If we call setState inside a useEffect without a dependency array, the effect runs after every render. Since setState triggers a re-render, it causes an infinite render loop, leading to a "Maximum update depth exceeded" error. To prevent this, we either provide a dependency array or conditionally update state.
+
+❌ Bad Example:
+function App() {
+  const [count, setCount] = React.useState(0);
+
+  React.useEffect(() => {
+    setCount(count + 1);
+  });
+
+  return <h1>{count}</h1>;
+}
+
+Here,
+useEffect runs after every render
+setState causes a new render
+That new render runs the effect again, so creates a loop
+Render → Effect → setState → Render → Effect → setState → ...
+
+✅ Correct Fix
+useEffect(() => {
+  setCount(1);
+}, []);
+
+Question 6:  what is tearing in React? and how does concurrent mode solve it?
+Tearing happens when different components read different versions of the same state during rendering so the UI becomes inconsistent.
+
+🧠 Simple Example
+Imagine you have a global store:
+
+const store = {
+  value: 0
+};
+
+Two components read from this store:
+function ComponentA() {
+  return <h1>{store.value}</h1>;
+}
+
+function ComponentB() {
+  return <h2>{store.value}</h2>;
+}
+
+Now imagine:
+1. React starts rendering
+2. ComponentA reads value = 0
+3. Before ComponentB renders, store updates to 1
+4. ComponentB reads value = 1
+
+Now UI shows:
+ComponentA → 0
+ComponentB → 1
+
+❌ Same state source
+❌ Same render cycle
+❌ Different values
+
+That inconsistency is called tearing.
+
+🔹 Why Does Tearing Happen?
+
+Tearing mainly happens in Concurrent Rendering when:
+
+1. React can pause rendering
+2. External store updates in between
+3. Components read different snapshots
+4. It usually occurs when using:
+External stores (Redux, Zustand, custom store) Without proper subscription handling
